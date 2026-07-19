@@ -1,6 +1,7 @@
 import { useFetch } from "../hooks/useFetch"
 import { getJadwal } from "../api/animeService"
 import { normalizeAnimeItem } from "../utils/normalize"
+import Seo from "../components/Seo"
 import Container from "../components/layout/Container"
 import Section from "../components/layout/Section"
 import Spinner from "../components/ui/Spinner"
@@ -45,6 +46,7 @@ export default function SchedulePage() {
 
   return (
     <Container className="pt-24">
+      <Seo title="Jadwal Rilis Anime" description="Lihat jadwal rilis anime mingguan lengkap dari Senin sampai Minggu. Cari tahu anime favoritmu tayang hari apa." url="/schedule" />
       <Section title="Jadwal Rilis">
         <div className="space-y-8">
           {groups.map((group) => {

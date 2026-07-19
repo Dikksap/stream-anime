@@ -2,6 +2,7 @@ import { useRef, useState, useEffect } from "react"
 import { useFetch } from "../hooks/useFetch"
 import { getAllAnime } from "../api/animeService"
 import { normalizeAnimeItem } from "../utils/normalize"
+import Seo from "../components/Seo"
 import Container from "../components/layout/Container"
 import Section from "../components/layout/Section"
 import Skeleton from "../components/ui/Skeleton"
@@ -96,6 +97,7 @@ export default function UnlimitedPage() {
       </div>
 
       <Container className="pt-24 md:pl-14">
+        <Seo title="Semua Anime" description="Koleksi lengkap semua anime A-Z. Temukan dan nonton anime subtitle Indonesia dari berbagai genre." url="/semua-anime" />
         <Section title="Semua Anime">
           {loading ? (
             <SkeletonLetter />

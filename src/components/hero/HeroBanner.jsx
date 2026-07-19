@@ -19,6 +19,7 @@ export default function HeroBanner({ anime }) {
           <img
             src={anime.poster}
             alt={anime.title}
+            fetchpriority="high"
             className="h-full w-full object-cover"
           />
         ) : (

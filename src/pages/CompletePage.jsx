@@ -2,6 +2,7 @@ import { useState } from "react"
 import { useFetch } from "../hooks/useFetch"
 import { getCompleteAnime } from "../api/animeService"
 import { extractAnimeList, normalizeAnimeItem } from "../utils/normalize"
+import Seo from "../components/Seo"
 import AnimeGrid from "../components/anime/AnimeGrid"
 import Pagination from "../components/ui/Pagination"
 import Container from "../components/layout/Container"
@@ -16,8 +17,16 @@ export default function CompletePage() {
   const animeList = extractAnimeList(data).map(normalizeAnimeItem)
   const totalPages = data?.pagination?.totalPages || null
 
+  const pageTitle = page > 1 ? `Complete Halaman ${page}` : "Anime Complete"
+  const pageDesc = `Daftar anime complete (tamat) halaman ${page} — nonton streaming subtitle Indonesia.`
+
+  const paginationLinks = []
+  if (page > 1) paginationLinks.push({ rel: "prev", href: `/complete${page > 2 ? `?page=${page - 1}` : ""}` })
+  if (totalPages && page < totalPages) paginationLinks.push({ rel: "next", href: `/complete?page=${page + 1}` })
+
   return (
     <Container className="pt-24">
+      <Seo title={pageTitle} description={pageDesc} url={`/complete${page > 1 ? `?page=${page}` : ""}`} paginationLinks={paginationLinks} />
       <Section title="Anime Complete">
         <AnimeGrid
           loading={loading}

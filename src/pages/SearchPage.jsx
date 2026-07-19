@@ -1,6 +1,7 @@
 import { useState } from "react"
 import { searchAnime } from "../api/animeService"
 import { extractAnimeList, normalizeAnimeItem } from "../utils/normalize"
+import Seo from "../components/Seo"
 import SearchInput from "../components/inputs/SearchInput"
 import AnimeGrid from "../components/anime/AnimeGrid"
 import Container from "../components/layout/Container"
@@ -33,6 +34,7 @@ export default function SearchPage() {
 
   return (
     <Container className="pt-24">
+      <Seo title="Cari Anime" description="Cari anime favoritmu berdasarkan judul. Temukan anime subtitle Indonesia terlengkap." url="/search" />
       <Section title="Cari Anime">
         <div className="mb-6">
           <SearchInput onSearch={handleSearch} />

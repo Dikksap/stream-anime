@@ -1,6 +1,7 @@
-import { useState } from "react"
+import { useState, useMemo } from "react"
 import { useFetch } from "../hooks/useFetch"
 import { getAnimeDetail } from "../api/animeService"
+import Seo from "../components/Seo"
 import Container from "../components/layout/Container"
 import Badge from "../components/ui/Badge"
 import Spinner from "../components/ui/Spinner"
@@ -58,8 +59,28 @@ export default function AnimeDetailPage() {
   const synopsisText = renderSynopsis(detail.synopsis)
   const genreList = detail.genreList || detail.genres || []
 
+  const jsonLd = useMemo(() => ({
+    "@context": "https://schema.org",
+    "@type": detail.type === "Movie" ? "Movie" : "TVSeries",
+    name: detail.title || detail.name,
+    description: synopsisText?.slice(0, 500) || "",
+    image: detail.poster,
+    genre: genreList.map((g) => g.title || g),
+    datePublished: detail.aired || undefined,
+    duration: detail.duration || undefined,
+    ...(detail.episodes ? { numberOfEpisodes: detail.episodes } : {}),
+  }), [detail, synopsisText, genreList])
+
   return (
     <div>
+      <Seo
+        title={detail.title || detail.name}
+        description={synopsisText?.slice(0, 300) || `Nonton anime ${detail.title || detail.name} subtitle Indonesia.`}
+        image={detail.poster}
+        url={`/anime/${slug}`}
+        type="video.tv_show"
+        jsonLd={jsonLd}
+      />
       <div className="relative h-[300px] w-full overflow-hidden md:h-[450px]">
         {detail.poster ? (
           <img src={detail.poster} alt={detail.title} className="h-full w-full object-cover" />

@@ -1,7 +1,8 @@
-import { useState, useEffect, useRef } from "react"
+import { useState, useEffect, useRef, useMemo } from "react"
 import { useFetch } from "../hooks/useFetch"
 import { getEpisode, getStreamServer } from "../api/animeService"
 import useWatchHistory from "../hooks/useWatchHistory"
+import Seo from "../components/Seo"
 import Container from "../components/layout/Container"
 import Spinner from "../components/ui/Spinner"
 import PrimaryButton from "../components/ui/PrimaryButton"
@@ -104,8 +105,34 @@ export default function EpisodePlayerPage() {
     )
   }
 
+  const jsonLd = useMemo(() => {
+    if (!episode) return null
+    return {
+      "@context": "https://schema.org",
+      "@type": "TVEpisode",
+      name: episode.title || "Episode",
+      partOfSeries: episode.animeId ? {
+        "@type": "TVSeries",
+        name: episode.animeId.replace(/-/g, " "),
+      } : undefined,
+      episodeNumber: episodeList.find((ep) => ep.episodeId === slug)?.eps || undefined,
+    }
+  }, [episode, episodeList, slug])
+
+  const epTitle = episode?.title || "Episode"
+  const seoDesc = episode?.info?.credit
+    ? `Nonton ${epTitle} subtitle Indonesia. ${episode.info.credit}`
+    : `Nonton streaming ${epTitle} subtitle Indonesia gratis.`
+
   return (
     <Container className="pt-24">
+      <Seo
+        title={epTitle}
+        description={seoDesc}
+        url={`/episode/${slug}`}
+        type="video.episode"
+        jsonLd={jsonLd}
+      />
       <button
         onClick={() => navigate(-1)}
         className="mb-6 flex items-center gap-2 text-sm text-text-secondary transition-colors hover:text-text-primary"

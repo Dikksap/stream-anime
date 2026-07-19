@@ -2,6 +2,7 @@ import { useFetch } from "../hooks/useFetch"
 import { getHome, getAnimeDetail } from "../api/animeService"
 import { normalizeAnimeItem } from "../utils/normalize"
 import useWatchHistory from "../hooks/useWatchHistory"
+import Seo from "../components/Seo"
 import HeroBanner from "../components/hero/HeroBanner"
 import AnimeRow from "../components/anime/AnimeRow"
 import HistoryCard from "../components/anime/HistoryCard"
@@ -88,8 +89,26 @@ export default function HomePage() {
     )
   }
 
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    name: "AniStream",
+    url: "https://www.sankavollerei.web.id",
+    potentialAction: {
+      "@type": "SearchAction",
+      target: "https://www.sankavollerei.web.id/search?q={search_term_string}",
+      "query-input": "required name=search_term_string",
+    },
+  }
+
   return (
     <div>
+      <Seo
+        title="Beranda"
+        description="Nonton streaming anime subtitle Indonesia gratis. Anime ongoing terbaru, anime completed, dan rekomendasi anime populer setiap hari."
+        url="/"
+        jsonLd={jsonLd}
+      />
       <HeroBanner anime={heroAnime} />
 
       <Container className="pt-8">
