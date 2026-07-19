@@ -1,0 +1,1 @@
+import{r as e}from"./index-ByFPp7Uj.js";function d(l,a=[]){const[u,o]=e.useState(null),[f,n]=e.useState(!0),[i,s]=e.useState(null),c=e.useCallback(()=>{let t=!1;return n(!0),s(null),l().then(r=>{t||o(r)}).catch(r=>{t||s(r)}).finally(()=>{t||n(!1)}),()=>{t=!0}},a);return e.useEffect(()=>c(),a),{data:u,loading:f,error:i,refetch:c}}export{d as u};
