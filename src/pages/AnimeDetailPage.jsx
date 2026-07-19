@@ -24,6 +24,20 @@ export default function AnimeDetailPage() {
   const { data, loading, error, refetch } = useFetch(() => getAnimeDetail(slug), [slug])
 
   const detail = data?.data?.anime || data?.data || data
+  const synopsisText = renderSynopsis(detail?.synopsis)
+  const genreList = detail?.genreList || detail?.genres || []
+
+  const jsonLd = useMemo(() => ({
+    "@context": "https://schema.org",
+    "@type": detail?.type === "Movie" ? "Movie" : "TVSeries",
+    name: detail?.title || detail?.name,
+    description: synopsisText?.slice(0, 500) || "",
+    image: detail?.poster,
+    genre: genreList.map((g) => g.title || g),
+    datePublished: detail?.aired || undefined,
+    duration: detail?.duration || undefined,
+    ...(detail?.episodes ? { numberOfEpisodes: detail.episodes } : {}),
+  }), [detail, synopsisText, genreList])
 
   if (loading) {
     return (
@@ -55,21 +69,6 @@ export default function AnimeDetailPage() {
       </Container>
     )
   }
-
-  const synopsisText = renderSynopsis(detail.synopsis)
-  const genreList = detail.genreList || detail.genres || []
-
-  const jsonLd = useMemo(() => ({
-    "@context": "https://schema.org",
-    "@type": detail.type === "Movie" ? "Movie" : "TVSeries",
-    name: detail.title || detail.name,
-    description: synopsisText?.slice(0, 500) || "",
-    image: detail.poster,
-    genre: genreList.map((g) => g.title || g),
-    datePublished: detail.aired || undefined,
-    duration: detail.duration || undefined,
-    ...(detail.episodes ? { numberOfEpisodes: detail.episodes } : {}),
-  }), [detail, synopsisText, genreList])
 
   return (
     <div>
