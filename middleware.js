@@ -138,31 +138,33 @@ function injectMeta(html, meta) {
 }
 
 export const config = {
-  matcher: ["/((?!api|_next|_static|_vercel|assets|favicon|robots|sitemap|og-image).*)"],
+  matcher: ["/((?!api|_next|_static|_vercel|assets|favicon|robots|sitemap|og-image|google).*)"],
 }
 
 export default async function middleware(request) {
-  const accept = request.headers.get("accept") || ""
-  if (!accept.includes("text/html")) {
-    return Response.next()
+  try {
+    const accept = request.headers.get("accept") || ""
+    if (!accept.includes("text/html")) return
+
+    const url = new URL(request.url)
+    const meta = getMeta(url.pathname)
+    if (!meta) return
+
+    const response = await fetch(url)
+    if (!response.ok) return
+
+    let html = await response.text()
+
+    html = injectMeta(html, meta)
+
+    return new Response(html, {
+      status: response.status,
+      headers: {
+        "content-type": "text/html;charset=UTF-8",
+        "x-robots-tag": "index, follow",
+      },
+    })
+  } catch {
+    return
   }
-
-  const url = new URL(request.url)
-  const meta = getMeta(url.pathname)
-  if (!meta) {
-    return Response.next()
-  }
-
-  const response = await fetch(url)
-  let html = await response.text()
-
-  html = injectMeta(html, meta)
-
-  return new Response(html, {
-    status: response.status,
-    headers: {
-      "content-type": "text/html;charset=UTF-8",
-      "x-robots-tag": "index, follow",
-    },
-  })
 }
