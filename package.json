@@ -7,9 +7,7 @@
     "dev": "vite",
     "test": "vitest --environment jsdom",
     "build": "vite build",
-    "preview": "vite preview",
-    "predeploy": "npm run build",
-    "deploy": "gh-pages -d dist"
+    "preview": "vite preview"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.3.3",
@@ -27,7 +25,6 @@
     "@testing-library/react": "^14.0.0",
     "@testing-library/user-event": "^14.0.0",
     "@vitejs/plugin-react": "^4.3.4",
-    "gh-pages": "^6.3.0",
     "jsdom": "^29.1.1",
     "vite": "^6.0.5",
     "vitest": "^1.0.0"
