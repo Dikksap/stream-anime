@@ -29,6 +29,25 @@ export default function EpisodePlayerPage() {
   const episodeList = episode?.info?.episodeList || []
   const genreList = episode?.info?.genreList || []
 
+  const jsonLd = useMemo(() => {
+    if (!episode) return null
+    return {
+      "@context": "https://schema.org",
+      "@type": "TVEpisode",
+      name: episode.title || "Episode",
+      partOfSeries: episode.animeId ? {
+        "@type": "TVSeries",
+        name: episode.animeId.replace(/-/g, " "),
+      } : undefined,
+      episodeNumber: episodeList.find((ep) => ep.episodeId === slug)?.eps || undefined,
+    }
+  }, [episode, episodeList, slug])
+
+  const epTitle = episode?.title || "Episode"
+  const seoDesc = episode?.info?.credit
+    ? `Nonton ${epTitle} subtitle Indonesia. ${episode.info.credit}`
+    : `Nonton streaming ${epTitle} subtitle Indonesia gratis.`
+
   // Reset state when slug changes
   useEffect(() => {
     autoLoaded.current = false
@@ -104,25 +123,6 @@ export default function EpisodePlayerPage() {
       </Container>
     )
   }
-
-  const jsonLd = useMemo(() => {
-    if (!episode) return null
-    return {
-      "@context": "https://schema.org",
-      "@type": "TVEpisode",
-      name: episode.title || "Episode",
-      partOfSeries: episode.animeId ? {
-        "@type": "TVSeries",
-        name: episode.animeId.replace(/-/g, " "),
-      } : undefined,
-      episodeNumber: episodeList.find((ep) => ep.episodeId === slug)?.eps || undefined,
-    }
-  }, [episode, episodeList, slug])
-
-  const epTitle = episode?.title || "Episode"
-  const seoDesc = episode?.info?.credit
-    ? `Nonton ${epTitle} subtitle Indonesia. ${episode.info.credit}`
-    : `Nonton streaming ${epTitle} subtitle Indonesia gratis.`
 
   return (
     <Container className="pt-24">
