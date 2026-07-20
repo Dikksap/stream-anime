@@ -17,6 +17,7 @@ export default function EpisodePlayerPage() {
   const [selectedServer, setSelectedServer] = useState(null)
   const [streamUrl, setStreamUrl] = useState(null)
   const [streamLoading, setStreamLoading] = useState(false)
+  const [streamError, setStreamError] = useState(null)
   const [showDownloads, setShowDownloads] = useState(false)
   const autoLoaded = useRef(false)
 
@@ -54,6 +55,7 @@ export default function EpisodePlayerPage() {
     setActiveQuality(0)
     setSelectedServer(null)
     setStreamUrl(null)
+    setStreamError(null)
     setShowDownloads(false)
   }, [slug])
 
@@ -77,25 +79,28 @@ export default function EpisodePlayerPage() {
     setActiveQuality(qIdx)
     setStreamLoading(true)
     setStreamUrl(null)
+    setStreamError(null)
     try {
       const res = await getStreamServer(serverId)
       const url = res?.data?.url || res?.url || res?.data?.link || res?.data?.embedUrl || ""
-      setStreamUrl(url)
-      if (url) {
-        const currentEp = episodeList.find((ep) => ep.episodeId === slug || ep.episodeId?.toLowerCase() === slug?.toLowerCase())
-        addToHistory({
-          episodeSlug: slug,
-          episodeTitle: currentEp?.title || episode?.title || "",
-          episodeNumber: currentEp?.eps || currentEp?.episodeNumber || null,
-          animeId: episode?.animeId || "",
-          animeTitle: episode?.animeId ? episode.animeId.replace(/-/g, " ") : "",
-          animePoster: "",
-          quality: qualities[qIdx]?.title || "",
-          serverName: qualities[qIdx]?.serverList?.find((s) => s.serverId === serverId)?.title?.trim() || "",
-        })
+      if (!url) {
+        setStreamError("Server tidak mengembalikan URL streaming.")
+        return
       }
+      setStreamUrl(url)
+      const currentEp = episodeList.find((ep) => ep.episodeId === slug || ep.episodeId?.toLowerCase() === slug?.toLowerCase())
+      addToHistory({
+        episodeSlug: slug,
+        episodeTitle: currentEp?.title || episode?.title || "",
+        episodeNumber: currentEp?.eps || currentEp?.episodeNumber || null,
+        animeId: episode?.animeId || "",
+        animeTitle: episode?.animeId ? episode.animeId.replace(/-/g, " ") : "",
+        animePoster: "",
+        quality: qualities[qIdx]?.title || "",
+        serverName: qualities[qIdx]?.serverList?.find((s) => s.serverId === serverId)?.title?.trim() || "",
+      })
     } catch {
-      setStreamUrl(null)
+      setStreamError("Gagal memuat server. Silakan pilih server lain.")
     } finally {
       setStreamLoading(false)
     }
@@ -168,6 +173,10 @@ export default function EpisodePlayerPage() {
               <div className="flex flex-col items-center gap-3">
                 <Spinner className="h-8 w-8" />
                 <p className="text-sm text-text-secondary">Memuat server...</p>
+              </div>
+            ) : streamError ? (
+              <div className="flex flex-col items-center gap-3 px-4">
+                <p className="text-sm text-red-400">{streamError}</p>
               </div>
             ) : (
               <div className="flex flex-col items-center gap-3">

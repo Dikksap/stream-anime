@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, useRef } from "react"
 import { searchAnime } from "../api/animeService"
 import { extractAnimeList, normalizeAnimeItem } from "../utils/normalize"
 import Seo from "../components/Seo"
@@ -12,12 +12,14 @@ import { useNavigate } from "react-router-dom"
 
 export default function SearchPage() {
   const navigate = useNavigate()
+  const lastQueryRef = useRef("")
   const [animeList, setAnimeList] = useState([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
   const [hasSearched, setHasSearched] = useState(false)
 
   const handleSearch = async (query) => {
+    lastQueryRef.current = query
     setLoading(true)
     setError(null)
     setHasSearched(true)
@@ -52,6 +54,7 @@ export default function SearchPage() {
             error={error}
             animeList={animeList}
             onSelect={(id) => navigate(`/anime/${id}`)}
+            onRetry={() => handleSearch(lastQueryRef.current)}
           />
         )}
       </Section>

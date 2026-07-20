@@ -9,7 +9,7 @@ export default function GenreCard({ genre, onClick }) {
     >
       <HiTag className="h-5 w-5 text-text-secondary transition-colors group-hover:text-white" />
       <span className="text-sm font-medium text-text-primary transition-colors group-hover:text-white">
-        {genre.title || genre}
+        {typeof genre.title === 'string' ? genre.title : 'Genre'}
       </span>
     </button>
   )

@@ -15,7 +15,7 @@ export default function GenrePage() {
   const { slug } = useParams()
   const [page, setPage] = useState(1)
 
-  const { data: genreData, loading: genreLoading } = useFetch(getGenreList, [])
+  const { data: genreData, loading: genreLoading, error: genreError, refetch: refetchGenres } = useFetch(getGenreList, [])
   const { data: animeData, loading: animeLoading, error, refetch } = useFetch(
     () => slug ? getAnimeByGenre(slug, page) : Promise.resolve(null),
     [slug, page]
@@ -45,15 +45,33 @@ export default function GenrePage() {
     <Container className="pt-24">
       <Seo title={seoTitle} description={seoDesc} url={slug ? `/genre/${slug}${page > 1 ? `?page=${page}` : ""}` : "/genre"} paginationLinks={genrePaginationLinks} />
       <Section title="Genre">
-        <div className="mb-8 grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
-          {genres.map((g, i) => (
-            <GenreCard
-              key={g.id || g.title || i}
-              genre={g}
-              onClick={handleGenre}
-            />
-          ))}
-        </div>
+        {genreError ? (
+          <div className="mb-8 flex flex-col items-center py-8 text-center">
+            <p className="text-sm text-red-400">{genreError.message || "Gagal memuat genre"}</p>
+            <button
+              onClick={refetchGenres}
+              className="mt-3 rounded-[8px] bg-primary px-5 py-2 text-sm font-semibold text-white transition-colors hover:bg-red-700"
+            >
+              Coba lagi
+            </button>
+          </div>
+        ) : genreLoading ? (
+          <div className="mb-8 grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
+            {Array.from({ length: 8 }).map((_, i) => (
+              <div key={i} className="h-12 animate-pulse rounded-[8px] bg-surface-high" />
+            ))}
+          </div>
+        ) : (
+          <div className="mb-8 grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
+            {genres.map((g, i) => (
+              <GenreCard
+                key={g.id || g.title || i}
+                genre={g}
+                onClick={handleGenre}
+              />
+            ))}
+          </div>
+        )}
 
         {slug && (
           <>
