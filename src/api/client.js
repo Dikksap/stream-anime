@@ -1,4 +1,5 @@
 import axios from 'axios'
+import RateLimiter from '../utils/rateLimiter'
 
 // Base URL diambil dari .env (VITE_API_BASE_URL)
 // Salin .env.example jadi .env lalu sesuaikan nilainya
@@ -10,8 +11,12 @@ const apiClient = axios.create({
   },
 })
 
-// Interceptor request: tempat yang pas untuk menyisipkan token auth
-apiClient.interceptors.request.use((config) => {
+const limiter = new RateLimiter(20, 60000)
+
+// Interceptor request: rate limiter (20 req/menit) + token auth
+apiClient.interceptors.request.use(async (config) => {
+  await limiter.acquire()
+
   const token = localStorage.getItem('token')
   if (token) {
     config.headers.Authorization = `Bearer ${token}`
